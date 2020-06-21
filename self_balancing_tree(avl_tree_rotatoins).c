@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include <stdbool.h>
+/*
 typedef struct node
 {
     int val;
@@ -8,7 +9,7 @@ typedef struct node
     struct node* right;
     int ht;
 } node; 
-
+*/
 /*
 need to identify the height of the tree then need to identify if the tree is unbalanced and then need to the proper rotations.
 Need to be done from the bottom up. therefore traverse the tree from the bottom first. Therefore use postorder tree traversal.
@@ -28,12 +29,48 @@ void case4(node * aNode);
 void switchContents(node * Node1,node * Node2);
 void performRotation(node * aNode);
 int getHeight(node * aNode);
+void insertNode(node * aNode);
+void postTraverse(node * aNode);
+
 node * insert(node * root,int val);
+
 node * insert(node * root,int val){
-    node * newNode = {val,NULL,NULL,-1};
-    //postTraverse()
+    printf("started insertion\n");
+    _Bool inserted = false;
+    node * curNode = root;
+    node * newNode = (node *) malloc(sizeof(struct node));
+    *newNode = {val,NULL,NULL,-1};
+    
+    while (inserted == false){
+        if (curNode->val <= val){
+            if (curNode->left == NULL){
+                curNode->left = newNode;
+                inserted == true;
+            }else{
+                curNode = curNode->left;
+            }
+        }else{
+            //curNode->val > val
+            if (curNode->right == NULL){
+                curNode->right = newNode;
+                inserted == true;
+            }else{
+                curNode = curNode->right;
+            }
+        }
+    }
+    
+    //will traverse the tree to check for imbalance
+    postTraverse(root);
+    return root;
 }
-int getHeight
+int getHeight(node * aNode){
+    if (aNode == NULL){
+        return -1;
+    }else{
+        return aNode->ht;
+    }
+}
 _Bool isImbalanced(node * aNode){
     int leftHeight = aNode->left->ht;
     int rightHeight = aNode->right->ht;
