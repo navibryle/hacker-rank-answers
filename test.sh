@@ -1,0 +1,1 @@
+gcc self_balancing_tree.c -std=c99 -pedantic -ggdb3 -o self_balancing_tree && ./self_balancing_tree

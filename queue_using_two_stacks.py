@@ -4,8 +4,9 @@ import sys
 solution:
 Have a enqueue stack and a dequeue stack. Type 1 transfer all data into the enqueue stack and push new data onto the enqueue stack.Type 2 transfer all data into the dequeue stack and pop the top of the stack. Type 3 transfer all data into the dequeue stack and peek the top of the stack.
 
-problem: Code is too slow.
-solution: try to minimize the big-oh of all operations
+new solution: new solution cut the queue in half and have an enqueue stack and a dequeue stACK. Put the front half in a stack with the front 
+on top of the stack and take the end into another stack with the end facing up. when dequeue just pop from dequeue stack and when enqueueing 
+add to enqueue stack. when dequeue stack is empty cut the stack in half.
 '''
 
 class Stack:
@@ -18,14 +19,26 @@ class Stack:
         self.stack.pop()
     def peek(self):
         return self.stack[-1]
-    def stack_transfer(self,stack):
-        #will transfer all the contents "stack" to this stack
-        while (len(stack.stack) != 0):
-            self.stack.append(stack.stack.pop())
     def is_empty(self):
         if len(self.stack) == 0:
             return True
         return False
+    def set_stack(self,a_list):
+        self.stack = a_list
+    def get_stack(self):
+        return self.stack
+    
+def cut_stack(a_stack):
+    #will return a tuple of 2 stacks the stack being cut in half
+    #will only work with enqueue stack
+    #the
+    stack = a_stack.get_stack
+    stack_mid = len(stack)//2
+    enqueue_stack = Stack()
+    dequeue_stack = Stack()
+    enqueue_stack.set_stack(stack[:stack_mid])
+    dequeue_stack.set_stack(stack[stack_mid:])
+    return [enqueue_stack,dequeue_stack]
 class Queue:
     def __init__(self):
         self.enqueue_stack = Stack()
@@ -44,7 +57,7 @@ class Queue:
             self.enqueue_stack.stack_transfer(self.dequeue_stack)
             self.enqueue_stack.push(new_elem)
         else:
-            #in this case the all the data is in the enqueu stack therefore we just need
+            #in this case the all the data is in the enqueue stack therefore we just need
             #to push new_elem onto the stack
             self.enqueue_stack.push(new_elem)
     def dequeue(self):
