@@ -14,7 +14,7 @@ typedef struct node
 /*
 cur goal:need to update the height of the nodes, including the node that is being inserted, after insertion and rotation
 doing: set the height of the tree
-to do: do postorder traversal and set the height of the leafnode to zero 
+cur problem: case identification is not working correctly
 */
 _Bool isCase1(node *aNode);
 _Bool isCase2(node *aNode);
@@ -29,7 +29,7 @@ void case4(node * aNode);
 void switchContents(node * Node1,node * Node2);
 void performRotation(node * aNode);
 int getHeight(node * aNode);
-void postTraverse(node * aNode);
+void postTraverse(node * aNode,bool * boolVal);
 void increaseHeight(node * aNode,int height);
 void decreaseHeight(node * aNode,int height);
 node * insert(node * root,int val);
@@ -41,6 +41,8 @@ void traverseDepth(node * aNode,node * parent,int * maxDepth);
 void setHeight(node* root);
 void traverseHeight(node * aNode,node * parent);
 void imabalancedTraverse(node * aNode,node * root,bool * boolVal);
+void inorderTraverse(node * root);
+void preTraversePrint(node * root);
 void imabalancedTraverse(node * aNode,node * root,bool * boolVal){
     if (aNode->left != NULL){
         imabalancedTraverse(aNode->left,root,boolVal);
@@ -112,13 +114,32 @@ int getBalanceFactor(node * aNode){
     return leftHeight - rightHeight;
 }
 void traversePrintBf(node * root){
-    if (root->right != NULL){
-        traversePrintBf(root->right);
-    }
     if (root->left != NULL){
         traversePrintBf(root->left);
     }
-    printf("balance height for node %d is : %d\n",root->val,root->ht);
+    if (root->right != NULL){
+        traversePrintBf(root->right);
+    }
+    printf("balance factor for node %d is : %d\n",root->val,getBalanceFactor(root));
+}
+void preTraversePrint(node * root){
+    printf("pre traversal node: %d\n",root->val);
+    if (root->left != NULL){
+        preTraversePrint(root->left);
+    }
+    if (root->right != NULL){
+        preTraversePrint(root->right);
+    }
+    
+}
+void inorderTraverse(node * root){
+    if (root->left != NULL){
+        inorderTraverse(root->left);
+    }
+    if (root->right != NULL){
+        inorderTraverse(root->right);
+    }
+    printf("postorder traversal: %d\n",root->val);
 }
 void increaseHeight(node * aNode,int height){
     if (aNode->left != NULL){
@@ -151,6 +172,9 @@ node * insert(node * root,int val){
     node * newNode = (node *) malloc(sizeof(struct node));
     node * testNode;
     bool boolVal = false;
+    
+    //inorderTraverse(root);
+    //preTraversePrint(root);
     while (inserted == false){
         /*
         if (curNode->val == 5){
@@ -186,18 +210,12 @@ node * insert(node * root,int val){
             }
         }
     }
-    imabalancedTraverse(root,root,&boolVal);
-    while (boolVal){
-        postTraverse(root);
         setHeight(root);
-        boolVal = false;
-        imabalancedTraverse(root,root,&boolVal);
-    }
-    
-    //traversePrintBf(root);
-    
-    
-    
+        postTraverse(root,&boolVal);
+        setHeight(root);
+        inorderTraverse(root);
+        traversePrintBf(root);
+        //traversePrintBf(root);
     //printf("BF after rotation: %d\n",getBalanceFactor(testNode));
     return root;
 }
@@ -227,16 +245,16 @@ _Bool isImbalanced(node * aNode){
     return ((leftHeight - rightHeight) > 1) || ((leftHeight - rightHeight) < -1);
 }
 _Bool isCase1(node * aNode){
-    return (aNode->left != NULL && aNode->left->right != NULL);
+    return (getBalanceFactor(aNode) == 2 && getBalanceFactor(aNode->left) == -1);
 }
 _Bool isCase2(node * aNode){
-    return (aNode->right != NULL && aNode->right->left != NULL);
+    return (getBalanceFactor(aNode) == -2 && getBalanceFactor(aNode->right) == 1);
 }
 _Bool isCase3(node * aNode){
-    return (aNode->left != NULL && aNode->left->left != NULL);
+    return (getBalanceFactor(aNode) == 2 && (getBalanceFactor(aNode->left) == 1 || getBalanceFactor(aNode->left) == 0));
 }
 _Bool isCase4(node * aNode){
-    return (aNode->right && aNode->right->right);
+    return (getBalanceFactor(aNode) == -2 && (getBalanceFactor(aNode->right) == -1 || getBalanceFactor(aNode->right) == 0));
 }
 void case1(node * aNode){
     //left right case
@@ -340,15 +358,16 @@ void performRotation(node * aNode){
         //idk what to put here 
     }
 }
-void postTraverse(node * aNode){
+void postTraverse(node * aNode,bool *boolVal){
    if (aNode->left != NULL){
-       postTraverse(aNode->left);
+       postTraverse(aNode->left,boolVal);
    }
    if ( aNode->right != NULL){
-    postTraverse(aNode->right);
+    postTraverse(aNode->right,boolVal);
    }    
-   if (isImbalanced(aNode) == true){
+   if (isImbalanced(aNode) == true && *boolVal == false){
         performRotation(aNode);
+        *boolVal = true;
     }
     
 }
@@ -361,10 +380,8 @@ void switchContents(node * Node1,node * Node2){
 }
 //========================================DRIVER CODE DO NOT COPY TO HACKERRANK==============================
 int main(){
-    node five = (node) {5,NULL,NULL,0};
-    node two = (node) {2,NULL,NULL,1};
-    node four = (node) {4,NULL,&five,1};
-    node three = (node) {3,&two,&four,2};
-    insert(&three,6);
+    node eight = (node) {8,NULL,NULL,1};
+    node ten = (node) {10,&eight,NULL,2};
+    insert(&ten,7);
     return 0;
 }
